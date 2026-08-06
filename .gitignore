@@ -1,0 +1,77 @@
+# ==========================================
+# 1. ENTORNOS Y ENTORNO VIRTUAL PYTHON
+# ==========================================
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# ==========================================
+# 2. PYTHON / DJANGO BACKEND
+# ==========================================
+# Archivos compilados y cach‚ de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Base de datos SQLite local
+*.sqlite3
+*.sqlite3-journal
+
+# Est ticos de producci¢n recolectados por Django
+/controlProyectos-backend/staticfiles/
+/controlProyectos-backend/media/
+
+# Variables de entorno y secretos
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Archivos de log
+*.log
+
+# ==========================================
+# 3. NODE.JS / REACT FRONTEND
+# ==========================================
+# Dependencias pesadas de Node
+node_modules/
+/controlProyectos-frontend/node_modules/
+
+# Archivos de compilaci¢n / Build de React/Vite
+dist/
+dist-ssr/
+build/
+*.pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ==========================================
+# 4. EDITORES DE CàDIGO Y SISTEMA OPERATIVO
+# ==========================================
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PyCharm / IntelliJ
+.idea/
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
