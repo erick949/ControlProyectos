@@ -1,55 +1,114 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
+import Login from './pages/Login'
+import RegistroInvestigador from './pages/RegistroInvestigador'
+import RegistroProyecto from './pages/RegistroProyecto'
+import AdminPanel from './pages/AdminPanel'
+import Dashboard from './pages/Dashboard'
+import MisProyectos from './pages/MisProyectos'
+import GestionInvestigadores from './pages/GestionInvestigadores'
+import Perfil from './pages/Perfil'
+import AppLayout from './components/layout/AppLayout'
+import ProtectedRoute from './components/layout/ProtectedRoute'
+import { PROYECTOS_EJEMPLO } from './data/mockData'
 
 export default function App() {
-  const [backendStatus, setBackendStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [session, setSession] = useState(null) // { role: 'jefe' | 'investigador', nombre }
+  const [proyectos, setProyectos] = useState(PROYECTOS_EJEMPLO)
 
-  useEffect(() => {
-    // Petición al backend de Django
-    fetch('http://127.0.0.1:8000/api/status/')
-      .then((res) => {
-        if (!res.ok) throw new Error('Error al conectar con el servidor');
-        return res.json();
-      })
-      .then((data) => {
-        setBackendStatus(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+  function handleLogin(sessionData) {
+    setSession(sessionData)
+  }
+
+  function handleLogout() {
+    setSession(null)
+  }
+
+  function handleCreateProyecto(data) {
+    setProyectos((prev) => [
+      {
+        id: `PR${String(prev.length + 1).padStart(3, '0')}`,
+        estado: 'Activo',
+        ...data,
+      },
+      ...prev,
+    ])
+  }
+
+  function handleDeleteProyecto(id) {
+    setProyectos((prev) => prev.filter((p) => p.id !== id))
+  }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-900 text-white p-4 font-sans">
-      <div className="rounded-xl bg-slate-800 p-8 shadow-xl border border-slate-700 text-center max-w-md w-full">
-        <h1 className="text-2xl font-bold text-sky-400 mb-4">
-          Control de Proyectos
-        </h1>
-        
-        <div className="p-4 rounded-lg bg-slate-900/50 border border-slate-700/50 text-sm mb-4">
-          <p className="text-slate-400 font-semibold mb-2">Estado de la conexión Backend:</p>
-          
-          {loading && <p className="text-yellow-400 animate-pulse">Conectando con Django...</p>}
-          
-          {error && (
-            <p className="text-rose-400 font-mono text-xs">
-              ❌ {error}. Revisa que el servidor Django esté corriendo.
-            </p>
-          )}
+    <Routes>
+      {/* Públicas: no requieren cuenta */}
+      <Route
+        path="/"
+        element={<Navigate to={session ? '/dashboard' : '/login'} replace />}
+      />
+      <Route
+        path="/login"
+        element={session ? <Navigate to="/dashboard" replace /> : <Login onLogin={handleLogin} />}
+      />
+      <Route path="/registro" element={<RegistroInvestigador />} />
 
-          {backendStatus && (
-            <div className="space-y-2">
-              <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                🟢 {backendStatus.status.toUpperCase()}
-              </span>
-              <p className="text-slate-200">{backendStatus.message}</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+      {/* Autenticadas: envueltas en el layout con sidebar */}
+      <Route
+        element={
+          <ProtectedRoute session={session}>
+            <AppLayout session={session} onLogout={handleLogout} />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard session={session} proyectos={proyectos} />} />
+        <Route path="/perfil" element={<Perfil session={session} />} />
+
+        {/* Solo investigador */}
+        <Route
+          path="/proyecto/nuevo"
+          element={
+            <ProtectedRoute session={session} roles={['investigador']}>
+              <RegistroProyecto session={session} onCreateProyecto={handleCreateProyecto} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/mis-proyectos"
+          element={
+            <ProtectedRoute session={session} roles={['investigador']}>
+              <MisProyectos session={session} proyectos={proyectos} />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Solo jefe de departamento */}
+        <Route
+          path="/admin/proyectos"
+          element={
+            <ProtectedRoute session={session} roles={['jefe']}>
+              <AdminPanel proyectos={proyectos} onDeleteProyecto={handleDeleteProyecto} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/investigadores"
+          element={
+            <ProtectedRoute session={session} roles={['jefe']}>
+              <GestionInvestigadores proyectos={proyectos} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/investigadores/nuevo"
+          element={
+            <ProtectedRoute session={session} roles={['jefe']}>
+              <RegistroInvestigador session={session} />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
+
+      <Route path="*" element={<Navigate to={session ? '/dashboard' : '/login'} replace />} />
+    </Routes>
+  )
 }
