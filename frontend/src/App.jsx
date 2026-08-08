@@ -12,8 +12,12 @@ import AppLayout from './components/layout/AppLayout'
 import ProtectedRoute from './components/layout/ProtectedRoute'
 import { PROYECTOS_EJEMPLO } from './data/mockData'
 
+
+
+import { loadSession } from './api/client'  // ← importar
+
 export default function App() {
-  const [session, setSession] = useState(null) // { role: 'jefe' | 'investigador', nombre }
+  const [session, setSession] = useState(() => loadSession())
   const [proyectos, setProyectos] = useState(PROYECTOS_EJEMPLO)
 
   function handleLogin(sessionData) {

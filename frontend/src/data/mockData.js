@@ -6,10 +6,10 @@ export const LINEAS_INVESTIGACION = [
 ]
 
 export const DIVISIONES = [
-  'Investigación y Desarrollo',
-  'Ingeniería y Tecnología',
-  'Ciencias Básicas',
-  'Ciencias de la Salud',
+  { value: 'ID', label: 'Investigación y Desarrollo' },
+  { value: 'IT', label: 'Ingeniería y Tecnología' },
+  { value: 'CB', label: 'Ciencias Básicas' },
+  { value: 'CS', label: 'Ciencias de la Salud' },
 ]
 
 export const ADMIN_CREDENTIALS = {

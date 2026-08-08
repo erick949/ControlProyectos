@@ -54,9 +54,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'corsheaders',
+
+    'rest_framework',
+    'rest_framework_simplejwt', 
     "usuarios",
     "proyectos",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # ← clave
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # ← opcional pero recomendado
+    ],
+}
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
