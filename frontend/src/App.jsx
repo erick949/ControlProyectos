@@ -14,7 +14,7 @@ import { PROYECTOS_EJEMPLO } from './data/mockData'
 
 
 
-import { loadSession } from './api/client'  // ← importar
+import { loadSession, clearTokens } from './api/client'
 
 export default function App() {
   const [session, setSession] = useState(() => loadSession())
@@ -24,9 +24,10 @@ export default function App() {
     setSession(sessionData)
   }
 
-  function handleLogout() {
-    setSession(null)
-  }
+function handleLogout() {
+  clearTokens()
+  setSession(null)
+}
 
   function handleCreateProyecto(data) {
     setProyectos((prev) => [
